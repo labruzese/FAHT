@@ -4,13 +4,14 @@ import kotlin.math.pow
 fun FAH1(data: Int, sizeInPow: Int){
     val maxSize = 2.0.pow(sizeInPow).toInt()
 
-    var hash = 0
-    for(i in 0..data.toString(2).length/2){
-        val p =
-        val chunk = data shr i*2
-        hash = hash xor chunk
-
-    }
+    var hash = BigInteger(0)
+    val primes = listOf<Int>(1) //placeholder
+    for(p in primes)
+        for(i in 0..data.toString(2).length/p){
+            val chunk = data shr i*2
+            hash = hash xor chunk
+            hash = rotateRight(hash, 1)
+        }
     //start with 0000
     //in chunks of 2
         //xor with data in chunks of length

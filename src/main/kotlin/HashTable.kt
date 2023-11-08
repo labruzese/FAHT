@@ -1,7 +1,7 @@
 //TODO: Add iterator
 import java.util.LinkedList
 
-class HashTable<K : Any, V>(private val hashFunc: (input: Any) -> Int, items: Collection<Pair<K,V>> = emptyList(), maxInitialStorage: Int = 16) {
+class HashTable<K : Any, V: Any>(private val hashFunc: (input: Any) -> Int, items: Collection<Pair<K,V>> = emptyList(), maxInitialStorage: Int = 16) {
     private val MAX_PERCENT_FULL: Double = 0.5
     private val SIZE_INCREASE_MULTIPLIER = 4
 
@@ -20,13 +20,14 @@ class HashTable<K : Any, V>(private val hashFunc: (input: Any) -> Int, items: Co
 
     //Post-condition: Returns the value if it is found, null otherwise
     operator fun get(key: K) : V? {
-        val list = arr[getIndex(key)] ?: return null //should this really return null or should we have an empty spot object
+        val list = arr[getIndex(key)] ?: return null
         val collisionIndex = list.indexOfFirst { it.first == key }
         return if (collisionIndex != -1) list[collisionIndex].second else null
     }
 
-    //Post-condition: Returns true if successfully added, false if the key is already there
-    operator fun set(key: K, value: V) : Boolean {
+    //Post-condition: Adds the key and value, replaces the current value if the key is already in the hashmap
+    //Returns null if key is not already found, otherwise returns the value replaced
+    operator fun set(key: K, value: V) : V? {
         //Find spot
         val arrIndex = getIndex(key)
 
@@ -38,7 +39,7 @@ class HashTable<K : Any, V>(private val hashFunc: (input: Any) -> Int, items: Co
         else {
             for(i in arr[arrIndex]!!.indices){
                 if(arr[arrIndex]!![i].first == key) {
-                    return false
+                    return arr[arrIndex]!![i].second.also{ arr[arrIndex]!![i] = Pair(key, value)}
                 }
             }
         }
@@ -47,7 +48,7 @@ class HashTable<K : Any, V>(private val hashFunc: (input: Any) -> Int, items: Co
         arr[arrIndex]!!.addLast(Pair(key, value))
         if (keys.size >= MAX_PERCENT_FULL * arr.size) increaseSize()
         keys.add(key)
-        return true
+        return null
     }
 
     private fun getIndex(key: K) = hashFunc(key) % arr.size
@@ -88,6 +89,7 @@ fun main(args: Array<String>) {
     val h = HashTable({0}, arrayListOf(Pair('a', 1)))
     h['b'] = 2
     println(h['a'])
+    println(h.set('a', 3))
     println(h['b'])
     println(h['c'])
     println()
