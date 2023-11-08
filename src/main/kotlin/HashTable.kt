@@ -19,7 +19,8 @@ class HashTable<K : Any, V>(private val hashFunc: (input: Any) -> Int, items: Co
 
     operator fun get(key: K) : V? {
         val list = arr[getIndex(key)] ?: return null //should this really return null or should we have an empty spot object
-        return list.indexOfFirst{it.first == key}.let{list[it].second}
+        val collisionIndex = list.indexOfFirst { it.first == key }
+        return if (collisionIndex != -1) list[collisionIndex].second else null
     }
 
     operator fun set(key: K, value: V) : Boolean {
@@ -32,8 +33,8 @@ class HashTable<K : Any, V>(private val hashFunc: (input: Any) -> Int, items: Co
                     return false
                 }
             }
-            arr[arrIndex]!!.addLast(Pair(key, value))
         }
+        arr[arrIndex]!!.addLast(Pair(key, value))
         if (keys.size >= MAX_PERCENT_FULL * arr.size) increaseSize()
         keys.add(key)
         return true
