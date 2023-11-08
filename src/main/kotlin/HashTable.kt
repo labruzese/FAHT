@@ -39,9 +39,28 @@ class HashTable<K : Any, V>(private val hashFunc: (input: Any) -> Int, items: Co
         return true
     }
 
-    fun remove(key: K, value: V){
-        numItems--
+    private fun getIndex(key: K) = hashFunc(key) % arr.size
 
+    private fun increaseSize(){
+        //Store all the keys and values of the old hashmap
+        val keyValues = mutableSetOf<Pair<K, V>>()
+        for(k in keys){
+            keyValues.add(Pair(k, get(k)!!))
+        }
+
+        //Clear and re-init everything
+        keys.clear()
+        arr = Array(arr.size * SIZE_INCREASE_MULTIPLIER) {null}
+
+        //Put all the key values back
+        for(kv in keyValues){
+            set(kv.first, kv.second)
+        }
+    }
+
+    fun remove(key: K, value: V){
+        TODO()
+        keys.remove(key)
     }
 
     fun size() : Int {
@@ -50,6 +69,6 @@ class HashTable<K : Any, V>(private val hashFunc: (input: Any) -> Int, items: Co
 }
 
 fun main(args: Array<String>) {
-    var x = HashTable<Char, Int>({43}, 25)
-
+    var x = HashTable<Char, Int>({0}, 25)
+//    val kotlinHashMap
 }
