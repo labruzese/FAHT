@@ -1,3 +1,6 @@
+//TODO: Add iterator
+//TODO: Add method that returns all key value pairs(and make toString rely on it)
+
 import java.util.LinkedList
 
 class HashTable<K : Any, V>(private val hashFunc: (input: Any) -> Int, items: Collection<Pair<K,V>> = emptyList(), maxInitialStorage: Int = 16) {
@@ -67,9 +70,23 @@ class HashTable<K : Any, V>(private val hashFunc: (input: Any) -> Int, items: Co
     fun size() : Int {
         return keys.size
     }
+
+    override fun toString(): String {
+        val keyValues = mutableSetOf<Pair<K, V>>()
+        for(k in keys){
+            keyValues.add(Pair(k, get(k)!!))
+        }
+        return keyValues.toString()
+    }
 }
 
 fun main(args: Array<String>) {
-    var x = HashTable<Char, Int>({0}, 25)
+    val h = HashTable({0}, arrayListOf(Pair('a', 1)))
+    h['b'] = 2
+    println(h['a'])
+    println(h['b'])
+    println(h['c'])
+    println()
+    print(h)
 //    val kotlinHashMap
 }
