@@ -72,6 +72,7 @@ class HashTable<K : Any, V>(private val hashFunc: (input: Any) -> Int, items: Co
     }
 
     fun size() : Int = keys.size
+
     fun getKVPairs() : MutableSet<Pair<K, V>>{
         val keyValues = mutableSetOf<Pair<K, V>>()
         for(k in keys){
