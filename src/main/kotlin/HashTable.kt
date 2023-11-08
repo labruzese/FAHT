@@ -1,25 +1,42 @@
 import java.util.LinkedList
 
-/*
-- do you make every slot a linked list or just ones with collisions
-- Should you dynamically determine size or let the user decide
- */
-class HashTable<K, V>(hashFunc: (input: Any) -> Int, items: Collection<V> = emptyList()) {
+class HashTable<K : Any, V>(private val hashFunc: (input: Any) -> Int, items: Collection<Pair<K,V>> = emptyList(), maxInitialStorage: Int = 16) {
+    private val MAX_PERCENT_FULL: Double = 0.5
+    private val SIZE_INCREASE_MULTIPLIER = 4
+
+    private var arr : Array<LinkedList<Pair<K, V>>?>  //17 is a very tasty number
+    private val keys = mutableSetOf<K>()
     init {
-
+        arr = Array(getArraySize(maxInitialStorage)) {null}
+        for(item in items){
+            this[item.first] = item.second
+        }
     }
 
-    private val ht = Array<LinkedList<Pair<K, V>>?>(17) {null} //17 is a very tasty number
-
-    private var numItems = 0
-
-    operator fun get(key: K) : V{
-        TODO()
+    private fun getArraySize(maxOccupancy: Int) : Int {
+        return (maxOccupancy/MAX_PERCENT_FULL).toInt() //this will work unless you have a terrible hash function but is it really a hashing function at that point
     }
 
-    operator fun set(key: K, value: V) {
-        numItems++
+    operator fun get(key: K) : V? {
+        val list = arr[getIndex(key)] ?: return null //should this really return null or should we have an empty spot object
+        return list.indexOfFirst{it.first == key}.let{list[it].second}
+    }
 
+    operator fun set(key: K, value: V) : Boolean {
+        val arrIndex = getIndex(key)
+        if (arr[arrIndex] == null)
+            arr[arrIndex] = LinkedList<Pair<K, V>>()
+        else {
+            for(i in arr[arrIndex]!!.indices){
+                if(arr[arrIndex]!![i].first == key) {
+                    return false
+                }
+            }
+            arr[arrIndex]!!.addLast(Pair(key, value))
+        }
+        if (keys.size >= MAX_PERCENT_FULL * arr.size) increaseSize()
+        keys.add(key)
+        return true
     }
 
     fun remove(key: K, value: V){
@@ -28,7 +45,7 @@ class HashTable<K, V>(hashFunc: (input: Any) -> Int, items: Collection<V> = empt
     }
 
     fun size() : Int {
-        return numItems
+        return keys.size
     }
 }
 
