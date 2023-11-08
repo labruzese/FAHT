@@ -1,21 +1,22 @@
-import kotlin.math.pow
+import java.math.BigInteger
 
 //Pre-condition: sizeInPow >= 4
-fun FAH1(data: Int, sizeInPow: Int){
-    val maxSize = 2.0.pow(sizeInPow).toInt()
+fun FAH1(data: BigInteger, hashLength: Int) {
+    val maxSize = 1 shl hashLength
 
-    var hash = BigInteger(0)
+    var hash = BigInteger("0")
     val primes = listOf<Int>(1) //placeholder
-    for(p in primes)
-        for(i in 0..data.toString(2).length/p){
-            val chunk = data shr i*2
+    for (p in primes){
+        for (i in 0..data.toString(2).length / p) {
+            val chunk = data shr i * 2
             hash = hash xor chunk
-            hash = rotateRight(hash, 1)
+            hash = rotateLeft(hash, hashLength)
         }
-    //start with 0000
-    //in chunks of 2
-        //xor with data in chunks of length
-        //rotate-right by the nth prime's sqrt decimal to the nth digit
-            //n is the chunk num
+    }
+}
 
+private fun rotateLeft(num : BigInteger, size: Int) : BigInteger{
+    var newNum = num shl 1
+    newNum += BigInteger.ZERO xor (num shr size)
+    return newNum
 }
