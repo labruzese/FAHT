@@ -87,6 +87,14 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (input: Any) -> Int, item
         }
         return keyValues
     }
+    fun getKeys() : MutableSet<K> = keys
+    fun getValues() : MutableSet<V>{
+        val values = mutableSetOf<V>()
+        for(k in keys){
+            values.add(Pair(k, get(k)!!).second)
+        }
+        return values
+    }
 
     override fun toString(): String = getKVPairs().toString()
 }
