@@ -1,15 +1,19 @@
 //TODO: Add iterator
+import java.math.BigInteger
 import java.util.LinkedList
 
-//Pre-condition: maxInitialStorage > 4 and maxInitialStorage is a power of 2
-class HashTable<K : Any, V: Any>(private val hashFunc: (input: Any) -> Int, items: Collection<Pair<K,V>> = emptyList(), private val maxInitialStorage: Int = 32) {
+
+//Pre-condition: maxInitialStorage is a positive power of 2
+class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {input -> FAH2(input.hashCode().toBigInteger(), 32)},
+                                 items: Collection<Pair<K,V>> = emptyList(),
+                                 private val maxInitialStorage: Int = 32) {
     private val MAX_PERCENT_FULL: Double = 0.5
     private val SIZE_INCREASE_MULTIPLIER = 4
 
     private var arr : Array<LinkedList<Pair<K, V>>?>
     private val keys = mutableSetOf<K>()
     init {
-        require(maxInitialStorage >= 32 && (maxInitialStorage and (maxInitialStorage - 1)) == 0) //>32 and power of 2
+        require(maxInitialStorage > 0 && (maxInitialStorage and (maxInitialStorage - 1)) == 0) //positive power of 2
         arr = Array(getArraySize(maxInitialStorage)) {null}
         for(item in items){
             this[item.first] = item.second
@@ -53,7 +57,7 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (input: Any) -> Int, item
         return null
     }
 
-    private fun getIndex(key: K) = hashFunc(key) % arr.size
+    private fun getIndex(key: K) = (hashFunc(key).mod(arr.size.toBigInteger())).toInt()
 
     //Post-condition: Increases the size of the hashmap by a factor of SIZE_INCREASE_MULTIPLIER
     private fun increaseSize(){
@@ -97,16 +101,4 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (input: Any) -> Int, item
     }
 
     override fun toString(): String = getKVPairs().toString()
-}
-
-fun main(args: Array<String>) {
-    val h = HashTable({0}, arrayListOf(Pair('a', 1)))
-    h['b'] = 2
-    println(h['a'])
-    println(h.set('a', 3))
-    println(h['b'])
-    println(h['c'])
-    println()
-    print(h)
-//    val kotlinHashMap
 }
