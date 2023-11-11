@@ -1,13 +1,15 @@
 //TODO: Add iterator
 import java.util.LinkedList
 
-class HashTable<K : Any, V: Any>(private val hashFunc: (input: Any) -> Int, items: Collection<Pair<K,V>> = emptyList(), maxInitialStorage: Int = 16) {
+//Pre-condition: maxInitialStorage > 4 and maxInitialStorage is a power of 2
+class HashTable<K : Any, V: Any>(private val hashFunc: (input: Any) -> Int, items: Collection<Pair<K,V>> = emptyList(), private val maxInitialStorage: Int = 32) {
     private val MAX_PERCENT_FULL: Double = 0.5
     private val SIZE_INCREASE_MULTIPLIER = 4
 
     private var arr : Array<LinkedList<Pair<K, V>>?>
     private val keys = mutableSetOf<K>()
     init {
+        require(maxInitialStorage >= 32 && (maxInitialStorage and (maxInitialStorage - 1)) == 0) //>32 and power of 2
         arr = Array(getArraySize(maxInitialStorage)) {null}
         for(item in items){
             this[item.first] = item.second
@@ -53,6 +55,7 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (input: Any) -> Int, item
 
     private fun getIndex(key: K) = hashFunc(key) % arr.size
 
+    //Post-condition: Increases the size of the hashmap by a factor of SIZE_INCREASE_MULTIPLIER
     private fun increaseSize(){
         //Store all the keys and values of the old hashmap
         val keyValues = getKVPairs()
@@ -67,9 +70,12 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (input: Any) -> Int, item
         }
     }
 
-    fun remove(key: K, value: V){
-        TODO()
+    //Post-condition: Returns true if the key was removed, false if not found
+    fun remove(key: K): Boolean{
         keys.remove(key)
+        val list = arr[getIndex(key)] ?: return false
+        val collisionIndex = list.indexOfFirst { it.first == key }
+        return collisionIndex != -1 && list.removeAt(collisionIndex).run { true }
     }
 
     fun size() : Int = keys.size
