@@ -12,6 +12,7 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
 
     private var arr : Array<LinkedList<Pair<K, V>>?>
     private val keys = mutableSetOf<K>()
+
     init {
         require(maxInitialStorage > 0 && (maxInitialStorage and (maxInitialStorage - 1)) == 0) //positive power of 2
         arr = Array(getArraySize(maxInitialStorage)) {null}
