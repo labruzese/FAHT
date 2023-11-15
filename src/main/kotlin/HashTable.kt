@@ -1,10 +1,12 @@
 //TODO: Add iterator
+import java.io.ByteArrayOutputStream
+import java.io.ObjectOutputStream
 import java.math.BigInteger
 import java.util.LinkedList
 
 
 //Pre-condition: maxInitialStorage is a positive power of 2
-class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {input -> FAH2(input.hashCode().toBigInteger(), 32)},
+class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {input -> FAH2(getObjectBinary(input), 32)},
                                  items: Collection<Pair<K,V>> = emptyList(),
                                  initialStorage: Int = 32) {
     private val MAX_PERCENT_FULL: Double = 0.5
@@ -109,3 +111,17 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
     fun getCollisionProportion() : Double = numCollisions.toDouble()/keys.size
     override fun toString(): String = getKVPairs().toString()
 }
+
+fun getObjectBinary(input: Any): BigInteger {
+    val out = ByteArrayOutputStream()
+    val reader = ObjectOutputStream(out)
+    reader.writeObject(input)
+
+    val data = out.toByteArray()
+
+    out.close()
+    reader.close()
+
+    return BigInteger(1, data)
+}
+

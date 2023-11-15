@@ -1,4 +1,5 @@
 import java.math.BigInteger
+import java.util.BitSet
 
 
 //Pre-condition: size >= num.bitLength()
@@ -26,7 +27,7 @@ fun checkAvalanche(){
 
     println("Data: $data")
     print("Number of digits changed out of $hashLength: ")
-    for(i in 0..<data.length){
+    for(i in data.indices){
         val newData: String = if(data[i] == '0') data.replaceRange(i, i + 1, "1") else data.replaceRange(i, i + 1, "0")
         val newHash: String = pad(FAH2(newData.toBigInteger(2), hashLength), hashLength)
         print("" + compare(orgHash, newHash) + ",")
@@ -54,7 +55,9 @@ fun checkCollisions(): Double{
     return h.getCollisionProportion()
 }
 fun main() {
-    checkAvalanche()
-    checkCollisions()
+    print(getObjectBinary(false))
 
+    //print(getObjectBinary(HashTable<String, String>()).toString(2))
+    //checkAvalanche()
+    //checkCollisions()
 }
