@@ -6,7 +6,6 @@ const val BRIGHT_WHITE = "\u001b[97;1m"
 const val RESET = "\u001b[0m"
 
 fun FAH2(data: BigInteger, hashLength: Int): BigInteger {
-    val maxSize = 1 shl hashLength
     var hash = BigInteger.ZERO
     val primes = listOf(2,3,5,7,11,13,17).filter { it < hashLength }
     for (k in 0..1) {
@@ -15,7 +14,6 @@ fun FAH2(data: BigInteger, hashLength: Int): BigInteger {
                 val chunk =
                     (data shr (i * p)) and ((1 shl p) - 1).toBigInteger() //cut to beginning of chunk and use a bitmask to make it chunk (p) sized
                 hash = hash xor chunk
-                hash = (hash * BigInteger("16777619")) and (BigInteger.ONE shl hash.bitLength()) - BigInteger.ONE
                 hash = rotateLeft(hash, hashLength)
             }
         }
@@ -24,7 +22,6 @@ fun FAH2(data: BigInteger, hashLength: Int): BigInteger {
 }
 
 fun FAH2Annotated(data: BigInteger, hashLength: Int): BigInteger {
-    val maxSize = 1 shl hashLength
     println("hashLength: $hashLength")
     println("data: ${data.toString(2)}")
 
@@ -45,8 +42,44 @@ fun FAH2Annotated(data: BigInteger, hashLength: Int): BigInteger {
     return hash
 }
 
+fun FAH2m(data: BigInteger, hashLength: Int): BigInteger {
+    var hash = BigInteger.ZERO
+    val primes = listOf(2, 3, 5, 7, 11, 13, 17, 19, 23).filter { it <= hashLength }
+    for (p in primes) {
+        for (i in 0..(data.bitLength() - 1) / p) {
+            val chunk = (data shr (i * p)) and ((1 shl p) - 1).toBigInteger()
+            hash = hash xor chunk
+            hash = rotateLeft(hash, hashLength)
+            hash = (hash * BigInteger("16777619")) and (BigInteger.ONE shl hash.bitLength()) - BigInteger.ONE
+        }
+    }
+    return hash
+}
+
+fun FAH2mAnnotated(data: BigInteger, hashLength: Int): BigInteger {
+    println("hashLength: $hashLength")
+    println("data: ${data.toString(2)}")
+
+    var hash = BigInteger.ZERO
+    val primes = listOf(2, 3, 5, 7, 11, 13, 17, 19, 23).filter { it <= hashLength }
+    for (p in primes){
+        println("$BRIGHT_CYAN--------------------- $p ---------------------$RESET")
+        for (i in 0..(data.bitLength()-1)/p) {
+            val chunk = (data shr (i*p)) and ((1 shl p) - 1).toBigInteger()
+            print(pad(hash, hashLength))
+            print(" xor ${pad(chunk, p)}")
+            hash = hash xor chunk
+            print(" = ${pad(hash, hashLength)} --> ")
+            hash = rotateLeft(hash, hashLength)
+            print("${pad(hash, hashLength)} * 16888619 = ")
+            hash = (hash * BigInteger("16777619")) and (BigInteger.ONE shl hash.bitLength()) - BigInteger.ONE
+            println(pad(hash, hashLength))
+        }
+    }
+    return hash
+}
+
 fun FAH3(data: BigInteger, hashLength: Int): BigInteger {
-    val maxSize = 1 shl hashLength
     var hash = BigInteger.ZERO
     val primes = listOf(2, 3, 5, 7, 11, 13, 17, 19, 23, 29).filter { it < hashLength }
     var operation = 0
@@ -67,7 +100,6 @@ fun FAH3(data: BigInteger, hashLength: Int): BigInteger {
 }
 
 fun FAH3Annotated(data: BigInteger, hashLength: Int): BigInteger {
-    val maxSize = 1 shl hashLength
     println("hashLength: $hashLength")
 
     var hash = BigInteger.ZERO
@@ -106,7 +138,7 @@ private fun rotateLeft(num : BigInteger, size: Int) : BigInteger {
 fun main() {
 //    val data = "11110101010101010"
 //    println("Data: $data")
-    println(FAH2Annotated("1011001".toBigInteger(2), 8).toString(2))
+    println(FAH2mAnnotated("1011001".toBigInteger(2), 8).toString(2))
 
 //    FAH2Annotated(BigInteger(data, 2), 8).toString(2)
 //    for(i in 0..100){

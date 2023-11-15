@@ -42,7 +42,7 @@ fun checkAvalanche(){
     }
 }
 
-fun checkCollisions(){
+fun checkCollisions(): Double{
     val h = HashTable<Int, String>()
     for(i in 1..10000){
         val key = (Math.random() * 100000000).toInt()
@@ -51,8 +51,10 @@ fun checkCollisions(){
     println("Num collisions: ${h.numCollisions}")
     println("Num collisions proportion: ${h.getCollisionProportion()}")
     println("Num keys: ${h.size()}")
-    //println("h: $h")
+    return h.getCollisionProportion()
 }
 fun main() {
+    checkAvalanche()
     checkCollisions()
+
 }

@@ -6,7 +6,7 @@ import java.util.LinkedList
 //Pre-condition: maxInitialStorage is a positive power of 2
 class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {input -> FAH2(input.hashCode().toBigInteger(), 32)},
                                  items: Collection<Pair<K,V>> = emptyList(),
-                                 private val initialStorage: Int = 32) {
+                                 initialStorage: Int = 32) {
     private val MAX_PERCENT_FULL: Double = 0.5
     private val SIZE_INCREASE_MULTIPLIER = 2
     var numCollisions = 0
