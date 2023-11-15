@@ -6,16 +6,17 @@ import java.util.LinkedList
 //Pre-condition: maxInitialStorage is a positive power of 2
 class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {input -> FAH2(input.hashCode().toBigInteger(), 32)},
                                  items: Collection<Pair<K,V>> = emptyList(),
-                                 private val maxInitialStorage: Int = 32) {
+                                 private val initialStorage: Int = 32) {
     private val MAX_PERCENT_FULL: Double = 0.5
-    private val SIZE_INCREASE_MULTIPLIER = 4
+    private val SIZE_INCREASE_MULTIPLIER = 2
+    var numCollisions = 0
 
     private var arr : Array<LinkedList<Pair<K, V>>?>
     private val keys = mutableSetOf<K>()
 
     init {
-        require(maxInitialStorage > 0 && (maxInitialStorage and (maxInitialStorage - 1)) == 0) //positive power of 2
-        arr = Array(getArraySize(maxInitialStorage)) {null}
+        require(initialStorage > 0 && (initialStorage and (initialStorage - 1)) == 0) //positive power of 2
+        arr = Array(getArraySize(initialStorage)) {null}
         for(item in items){
             this[item.first] = item.second
         }
@@ -39,8 +40,9 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
         val arrIndex = getIndex(key)
 
         //Add a linked list if there isn't one there already
-        if (arr[arrIndex] == null)
+        if (arr[arrIndex] == null) {
             arr[arrIndex] = LinkedList<Pair<K, V>>()
+        }
 
         //Make sure the key isn't already in the linked list
         else {
@@ -49,12 +51,13 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
                     return arr[arrIndex]!![i].second.also{ arr[arrIndex]!![i] = Pair(key, value)}
                 }
             }
+            numCollisions++//If there is already a list and the key isn't in it, new collision
         }
 
         //Add item
         arr[arrIndex]!!.addLast(Pair(key, value))
-        if (keys.size >= MAX_PERCENT_FULL * arr.size) increaseSize()
         keys.add(key)
+        if (keys.size >= MAX_PERCENT_FULL * arr.size) increaseSize()
         return null
     }
 
@@ -67,12 +70,14 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
 
         //Clear and re-init everything
         keys.clear()
+        numCollisions = 0//TODO: Delete
         arr = Array(arr.size * SIZE_INCREASE_MULTIPLIER) {null}
 
         //Put all the key values back
         for(kv in keyValues){
             set(kv.first, kv.second)
         }
+        println("Size increased to ${arr.size}")
     }
 
     //Post-condition: Returns true if the key was removed, false if not found
@@ -85,6 +90,7 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
 
     fun size() : Int = keys.size
 
+    @Suppress("MemberVisibilityCanBePrivate")
     fun getKVPairs() : MutableSet<Pair<K, V>>{
         val keyValues = mutableSetOf<Pair<K, V>>()
         for(k in keys){
@@ -100,6 +106,6 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
         }
         return values
     }
-
+    fun getCollisionProportion() : Double = numCollisions.toDouble()/keys.size
     override fun toString(): String = getKVPairs().toString()
 }
