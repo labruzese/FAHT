@@ -43,19 +43,27 @@ fun checkAvalanche(){
     }
 }
 
-fun checkCollisions(): Double{
-    val h = HashTable<Int, String>()
+fun checkCollisions(hashFunc: (Any) -> BigInteger): Double{
+    val h = HashTable<Int, String>(hashFunc, initialStorage = 32768)
+    val start = System.currentTimeMillis()
     for(i in 1..10000){
         val key = (Math.random() * 100000000).toInt()
         h[key] = "e"
     }
+    val end = System.currentTimeMillis()
+    print("Time: ${"%.2f".format((end - start)/1000.0)} seconds - ")
+    /*
     println("Num collisions: ${h.numCollisions}")
     println("Num collisions proportion: ${h.getCollisionProportion()}")
     println("Num keys: ${h.size()}")
+     */
     return h.getCollisionProportion()
 }
 fun main() {
-    print(getObjectBinary(false))
+    println("Object hashing:" + checkCollisions { input -> input.hashCode().toBigInteger() })
+    println("FAH2 hashing:" + checkCollisions { input -> FAH2(getObjectBinary(input), 32) })
+    println("FAH2m hashing:" + checkCollisions { input -> FAH2m(getObjectBinary(input), 32) })
+    println("FAH3 hashing:" + checkCollisions { input -> FAH3(getObjectBinary(input), 32) })
 
     //print(getObjectBinary(HashTable<String, String>()).toString(2))
     //checkAvalanche()

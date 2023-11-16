@@ -66,20 +66,19 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
     private fun getIndex(key: K) = (hashFunc(key).mod(arr.size.toBigInteger())).toInt()
 
     //Post-condition: Increases the size of the hashmap by a factor of SIZE_INCREASE_MULTIPLIER
-    private fun increaseSize(){
+    private fun increaseSize() {
         //Store all the keys and values of the old hashmap
         val keyValues = getKVPairs()
 
         //Clear and re-init everything
         keys.clear()
         numCollisions = 0//TODO: Delete
-        arr = Array(arr.size * SIZE_INCREASE_MULTIPLIER) {null}
+        arr = Array(arr.size * SIZE_INCREASE_MULTIPLIER) { null }
 
         //Put all the key values back
-        for(kv in keyValues){
+        for (kv in keyValues) {
             set(kv.first, kv.second)
         }
-        println("Size increased to ${arr.size}")
     }
 
     //Post-condition: Returns true if the key was removed, false if not found
