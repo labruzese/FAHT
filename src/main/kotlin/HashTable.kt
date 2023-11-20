@@ -79,6 +79,7 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
         for (kv in keyValues) {
             set(kv.first, kv.second)
         }
+        println("Size increased to ${arr.size}")
     }
 
     //Post-condition: Returns true if the key was removed, false if not found
