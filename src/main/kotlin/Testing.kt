@@ -68,6 +68,7 @@ fun main() {
 
     println("Object hashing:" + checkCollisions({ input -> input.hashCode().toBigInteger() }, timePrinting = true))
     println("FAH2 hashing:" + checkCollisions ({ input -> FAH2(getObjectBinary(input), 32) }, timePrinting = true))
+    println("FAH4 hashing:" + checkCollisions ({ input -> FAH4.hash(getObjectBinary(input)) }, timePrinting = true))
     //println("FAH2m hashing:" + checkCollisions { input -> FAH2m(getObjectBinary(input), 32) })
     //println("FAH3 hashing:" + checkCollisions { input -> FAH3(getObjectBinary(input), 32) })
 
