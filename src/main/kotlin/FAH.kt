@@ -16,8 +16,8 @@ fun FAH2(data: BigInteger, hashLength: Int): BigInteger {
         for (p in primes) {
             var chunkDonor = data
             for (i in 0..(data.bitLength() - 1) / p) {
-                chunkDonor = chunkDonor shr p
                 val chunk = chunkDonor and ((1 shl p) - 1).toBigInteger()
+                chunkDonor = chunkDonor shr p
                 (data shr (i * p)) and ((1 shl p) - 1).toBigInteger() //cut to beginning of chunk and use a bitmask to make it chunk (p) sized
                 hash = hash xor chunk
                 hash = rotateLeft(hash, hashLength)
@@ -37,8 +37,9 @@ fun FAH2Annotated(data: BigInteger, hashLength: Int): BigInteger {
         var chunkDonor = data
         println("$BRIGHT_CYAN--------------------- $p ---------------------$RESET")
         for (i in 0..(data.bitLength()-1)/p) {
-            chunkDonor = chunkDonor shr p
             val chunk = chunkDonor and ((1 shl p) - 1).toBigInteger()
+            chunkDonor = chunkDonor shr p
+
             print(pad(hash, hashLength))
             print(" xor ${pad(chunk, p)}")
             hash = hash xor chunk
