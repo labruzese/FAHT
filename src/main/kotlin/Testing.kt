@@ -49,11 +49,11 @@ fun checkAvalanche(hashFunc: (Any) -> BigInteger, printing: Boolean = false): Do
 }
 
 fun checkCollisions(hashFunc: (Any) -> BigInteger, timePrinting: Boolean = false, collisionPrinting: Boolean = false): Double{
-    val h = HashTable<String, String>(hashFunc, initialStorage = 32768)
+    val h = HashTable<Int, String>(hashFunc, initialStorage = 32768/2)
     val start = System.currentTimeMillis()
-    for(i in 1..16384){
-        val key = (Math.random() * 100000000).toInt().toString(17)
-        h[key] = "e"
+    for(i in 1..16384/2){
+        val key = i*32768/2 + 3
+        h[key] = ""
     }
     val end = System.currentTimeMillis()
     if(timePrinting) print("Time: ${"%.2f".format((end - start)/1000.0)} seconds - ")
@@ -66,12 +66,18 @@ fun checkCollisions(hashFunc: (Any) -> BigInteger, timePrinting: Boolean = false
 }
 fun main() {
 
+//    println(FAH2(BigInteger.ONE, 32))
+//    println(FAH2(BigInteger.TWO, 32))
+//    println(FAH2(BigInteger("3"), 32))
+//    println(FAH2(BigInteger("4"), 32))
+//    println(FAH2(BigInteger("5"), 32))
+//    println(FAH2(BigInteger("6"), 32))
     println("Object hashing:" + checkCollisions({ input -> input.hashCode().toBigInteger() }, timePrinting = true))
     println("FAH2 hashing:" + checkCollisions ({ input -> FAH2(getObjectBinary(input), 32) }, timePrinting = true))
     //println("FAH2m hashing:" + checkCollisions { input -> FAH2m(getObjectBinary(input), 32) })
     //println("FAH3 hashing:" + checkCollisions { input -> FAH3(getObjectBinary(input), 32) })
 
     //print(getObjectBinary(HashTable<String, String>()).toString(2))
-    checkAvalanche({input -> FAH2(getObjectBinary(input), 32) }, true)
+    //checkAvalanche({input -> FAH2(getObjectBinary(input), 32) }, true)
     //checkCollisions()
 }
