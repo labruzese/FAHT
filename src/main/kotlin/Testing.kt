@@ -17,13 +17,13 @@ private fun compare(s1: String, s2: String): Int{
 }
 
 fun checkAvalanche(hashFunc: (Any) -> BigInteger, printing: Boolean = false): Double{
-    val hashLength = 32
+    val hashLength = 128
 
-    val data: String = "1100101011001111010101010010101001".repeat(1)
+    val data: String = "11111111".repeat(1)
     val orgHash: String = pad(hashFunc(data), hashLength)
     val changedNums = IntArray(hashLength)
 
-    if(printing) println("Data: $data")
+    if(printing) println("Data: ${getObjectBinary(data)}")
     if(printing) print("Number of digits changed out of $hashLength: ")
     for(i in data.indices){
         val newData: String = if(data[i] == '0') data.replaceRange(i, i + 1, "1") else data.replaceRange(i, i + 1, "0")
@@ -34,6 +34,7 @@ fun checkAvalanche(hashFunc: (Any) -> BigInteger, printing: Boolean = false): Do
                 changedNums[j]++
             }
         }
+        println("$newHash   --- digit changed: $i")
     }
     if(printing) {
         println()
@@ -66,15 +67,15 @@ fun checkCollisions(hashFunc: (Any) -> BigInteger, timePrinting: Boolean = false
 }
 fun main() {
 
-//    println(FAH2(BigInteger.ONE, 32))
-//    println(FAH2(BigInteger.TWO, 32))
-//    println(FAH2(BigInteger("3"), 32))
-//    println(FAH2(BigInteger("4"), 32))
-//    println(FAH2(BigInteger("5"), 32))
-//    println(FAH2(BigInteger("6"), 32))
-    println("Object hashing:" + checkCollisions({ input -> input.hashCode().toBigInteger() }, timePrinting = true))
-    println("FAH2 hashing:" + checkCollisions ({ input -> FAH2(getObjectBinary(input), 32) }, timePrinting = true))
-    println("FAH4 hashing:" + checkCollisions ({ input -> FAH4.hash(getObjectBinary(input)) }, timePrinting = true))
+//    println(FAH4.hash(BigInteger.ONE))
+//    println(FAH4.hash(BigInteger.TWO))
+//    println(FAH4.hash(BigInteger("3")))
+//    println(FAH4.hash(BigInteger("4")))
+//    println(FAH4.hash(BigInteger("5")))
+//    println(FAH4.hash(BigInteger("6")))
+    //println("Object hashing:" + checkCollisions({ input -> input.hashCode().toBigInteger() }, timePrinting = true))
+    //println("FAH2 hashing:" + checkCollisions ({ input -> FAH2(getObjectBinary(input), 32) }, timePrinting = true))
+    println("FAH4 hashing:" + checkAvalanche ({ input -> FAH4.hash(input) },false))
     //println("FAH2m hashing:" + checkCollisions { input -> FAH2m(getObjectBinary(input), 32) })
     //println("FAH3 hashing:" + checkCollisions { input -> FAH3(getObjectBinary(input), 32) })
 

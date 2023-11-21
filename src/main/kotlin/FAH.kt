@@ -148,15 +148,17 @@ object FAH4 {
     private val file = File("src/table")
     private val table: Array<Array<BigInteger>> by lazy { getTable(file) }
 
-    fun hash(data: BigInteger) : BigInteger{
+    fun hash(input: Any) : BigInteger{
+        val data = getObjectBinary(input)
         var hash = BigInteger.ZERO
         var chunkDonor = data
-        for(i in 0..<data.bitLength()/16+1){
-            chunkDonor = chunkDonor shr (i*16)
-            val chunk =  chunkDonor and (BigInteger.ONE shl 15)
+        for(i in 0..data.bitLength()){
+            chunkDonor = chunkDonor shr 16
+            val chunk =  chunkDonor and BigInteger("FFFF",16) //each f is 1111
 
-            val x = chunk and (BigInteger.ONE shl 7)
+            val x = chunk and BigInteger("FF", 16)
             val y = chunk shr 8
+            //print("x:$x y:$y .. ")
 
             hash = hash xor table[x.toInt()][y.toInt()]
         }
@@ -191,12 +193,32 @@ object FAH4 {
     }
 
     fun main() {
-        val f : File = File("src/table")
-
-        //serializeNewTable(f)
-
-        val table = getTable(f)
-        println(table[0][0])
-        println(table[255][255])
+        println(FAH4.hash(BigInteger.ONE))
+        println(FAH4.hash(BigInteger.TWO))
+        println(FAH4.hash(BigInteger("1111111",2)))
+        println(FAH4.hash(BigInteger("1111110",2)))
+        println(FAH4.hash(BigInteger("1111101",2)))
+        println(FAH4.hash(BigInteger("1111011",2)))
+        println(FAH4.hash(BigInteger("1110111",2)))
+        println(FAH4.hash(BigInteger("1101111",2)))
+        println(FAH4.hash(BigInteger("1011111",2)))
+        println(FAH4.hash(BigInteger("0111111",2)))
     }
+}
+
+fun main() {
+    //FAH4.main()
+    //println(getObjectBinary("1111111").toString(2))
+    println("1 " + FAH4.hash(getObjectBinary("1111111")))
+    println("2 " + FAH4.hash(getObjectBinary("1111110")))
+    println("3 " + FAH4.hash(getObjectBinary("1111101")))
+    println("4 " + FAH4.hash(getObjectBinary("1111011")))
+    //println(getObjectBinary("1110111").toString(2))
+
+    println("5 " + FAH4.hash(getObjectBinary("1110111")))
+    //println(getObjectBinary("1101111").toString(2))
+
+    println("6 " + FAH4.hash(getObjectBinary("1101111")))
+    println("7 " + FAH4.hash(getObjectBinary("1011111")))
+    println("8 " + FAH4.hash(getObjectBinary("0111111")))
 }
