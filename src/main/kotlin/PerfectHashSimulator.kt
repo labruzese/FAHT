@@ -4,10 +4,10 @@ fun simulatePerfectHash(items: Int, spaces: Int): Double{
     val arr = Array(spaces){false}
     var numCollisions = 0
     for (i in 0..<items){
-        val rand = (Math.random() * i).toInt()
+        val rand = (Math.random() * spaces).toInt()
         if(arr[rand]) numCollisions++ else arr[rand] = true
     }
-    return numCollisions.toDouble()/spaces
+    return numCollisions.toDouble()/items
 }
 
 fun main() {
