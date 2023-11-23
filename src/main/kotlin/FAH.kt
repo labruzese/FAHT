@@ -12,21 +12,18 @@ const val RESET = "\u001b[0m"
 fun FAH2(data: BigInteger, hashLength: Int): BigInteger {
     var hash = BigInteger.ZERO
     val primes = listOf(2,3,5,7,11,13,17,19,23).filter { it < hashLength }
-    for (k in 0..0) {
-        for (p in primes) {
-            var chunkDonor = data
-            for (i in 0..(data.bitLength() - 1) / p) {
-                val chunk = chunkDonor and ((1 shl p) - 1).toBigInteger()
-                chunkDonor = chunkDonor shr p
-                (data shr (i * p)) and ((1 shl p) - 1).toBigInteger() //cut to beginning of chunk and use a bitmask to make it chunk (p) sized
-                hash = hash xor chunk
-                hash = rotateLeft(hash, hashLength)
-            }
+    for (p in primes) {
+        var chunkDonor = data
+        for (i in 0..(data.bitLength() - 1) / p) {
+            val chunk = chunkDonor and ((1 shl p) - 1).toBigInteger()
+            chunkDonor = chunkDonor shr p
+            hash = hash xor chunk
+            hash = rotateLeft(hash, hashLength)
         }
     }
+
     return hash
 }
-
 fun FAH2Annotated(data: BigInteger, hashLength: Int): BigInteger {
     println("hashLength: $hashLength")
     println("data: ${data.toString(2)}")

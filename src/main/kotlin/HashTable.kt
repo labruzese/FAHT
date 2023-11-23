@@ -13,8 +13,9 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
     private val SIZE_INCREASE_MULTIPLIER = 2
     var numCollisions = 0
 
-    private var arr : Array<LinkedList<Pair<K, V>>?>
+    var arr : Array<LinkedList<Pair<K, V>>?>//TODO: make private
     private val keys = mutableSetOf<K>()
+
 
     init {
         require(initialStorage > 0 && (initialStorage and (initialStorage - 1)) == 0) //positive power of 2
@@ -59,7 +60,7 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
         //Add item
         arr[arrIndex]!!.addLast(Pair(key, value))
         keys.add(key)
-        if (keys.size >= MAX_PERCENT_FULL * arr.size) increaseSize()
+        if (keys.size > MAX_PERCENT_FULL * arr.size) increaseSize()
         return null
     }
 
@@ -67,6 +68,7 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
 
     //Post-condition: Increases the size of the hashmap by a factor of SIZE_INCREASE_MULTIPLIER
     private fun increaseSize() {
+        println("Size increased to ${arr.size}")
         //Store all the keys and values of the old hashmap
         val keyValues = getKVPairs()
 
@@ -79,7 +81,6 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
         for (kv in keyValues) {
             set(kv.first, kv.second)
         }
-        println("Size increased to ${arr.size}")
     }
 
     //Post-condition: Returns true if the key was removed, false if not found
