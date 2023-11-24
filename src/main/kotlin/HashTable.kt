@@ -13,7 +13,8 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
     private val SIZE_INCREASE_MULTIPLIER = 2
     var numCollisions = 0
 
-    var arr : Array<LinkedList<Pair<K, V>>?>//TODO: make private
+    //Should be fully private in any actual implementation but is publicly visible for testing
+    var arr : Array<LinkedList<Pair<K, V>>?> private set
     private val keys = mutableSetOf<K>()
 
 

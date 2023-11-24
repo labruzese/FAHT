@@ -51,10 +51,10 @@ fun checkAvalanche(hashFunc: (Any) -> BigInteger, printing: Boolean = false): Do
 }
 
 fun checkCollisions(hashFunc: (Any) -> BigInteger, hashPrinting: Boolean = false): Double{
-    val h = HashTable<Double, String>(hashFunc, initialStorage = 2.0.pow(15).toInt())
+    val h = HashTable<String, String>(hashFunc, initialStorage = 2.0.pow(13).toInt())
     val start = System.currentTimeMillis()
-    for(i in 1..2.0.pow(15).toInt()){
-        val key = Math.random()
+    for(i in 1..2.0.pow(13).toInt()){
+        val key = "$i + penguin"
         h[key] = ""
     }
     val end = System.currentTimeMillis()
@@ -70,33 +70,29 @@ fun checkCollisions(hashFunc: (Any) -> BigInteger, hashPrinting: Boolean = false
             println(l)
         }
         println("------------------------------")
-//        for (i in h.getKeys()) {
-//            FAH2(getObjectBinary(i), 32).run{println("${this.mod(BigInteger(2.0.pow(5).toInt().toString()))} - $this - $i")}
-//        }
+
     }
     return h.getCollisionProportion()
 }
 fun main() {
 
-//    println(FAH2(getObjectBinary(Array(1){2}), 16))
-//    println(FAH2(getObjectBinary(Array(2){2}), 16))
-//    println(FAH2(getObjectBinary(Array(1){3}), 16))
-//    println(FAH2(getObjectBinary(Array(4){4}), 16))
+//    println(FAH2Annotated(getObjectBinary(arrayOf(1,2,3)), 32))
+//    println(FAH2Annotated(getObjectBinary(arrayOf(2,3,4)), 32))
+
 //    println(FAH4.hash(BigInteger.TWO))
 //    println(FAH4.hash(BigInteger("3")))
 //    println(FAH4.hash(BigInteger("4")))
 //    println(FAH4.hash(BigInteger("5")))
 //    println(FAH4.hash(BigInteger("6")))
+
     print("Object hashing - ")
     checkCollisions({ input -> input.hashCode().toBigInteger() }, hashPrinting = false)
     print("FAH2 hashing - ")
     checkCollisions ({ input -> FAH2(getObjectBinary(input), 32) }, hashPrinting = false)
-//    println("FAH4 hashing:" + checkCollisions ({ input -> FAH4.hash(input) }, timePrinting = true))
-//    println("FAH4 avalanche:" + checkAvalanche ({ input -> FAH4.hash(input) },false))
-//    println("FAH2m hashing:" + checkCollisions { input -> FAH2m(getObjectBinary(input), 32) })
-//    println("FAH3 hashing:" + checkCollisions { input -> FAH3(getObjectBinary(input), 32) })
+    print("FAH2c hashing - ")
+    checkCollisions ({ input -> FAH2c(getObjectBinary(input), 32) }, hashPrinting = false)
+//    print("FAH4 hashing - ")
+//    checkCollisions ({ input -> FAH4.hash(input) }, hashPrinting = false)
 
-    //print(getObjectBinary(HashTable<String, String>()).toString(2))
     //checkAvalanche({input -> FAH2(getObjectBinary(input), 32) }, true)
-    //checkCollisions()
 }
