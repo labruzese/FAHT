@@ -114,16 +114,5 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
     override fun toString(): String = getKVPairs().toString()
 }
 
-fun getObjectBinary(input: Any): BigInteger {
-    val out = ByteArrayOutputStream()
-    val reader = ObjectOutputStream(out)
-    reader.writeObject(input)
 
-    val data = out.toByteArray()
-
-    out.close()
-    reader.close()
-
-    return BigInteger(1, data)
-}
 

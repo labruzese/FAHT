@@ -9,7 +9,8 @@ const val BRIGHT_CYAN = "\u001b[96;1m"
 const val BRIGHT_WHITE = "\u001b[97;1m"
 const val RESET = "\u001b[0m"
 
-fun FAH2(data: BigInteger, hashLength: Int): BigInteger {
+fun FAH2(input: Any, hashLength: Int): BigInteger {
+    val data = getObjectBinary(input)
     var hash = BigInteger.ZERO
     val primes = listOf(2,3,5,7, 11, 13, 17, 19, 23).filter { it < hashLength }
     for (p in primes) {
@@ -24,7 +25,8 @@ fun FAH2(data: BigInteger, hashLength: Int): BigInteger {
 
     return hash
 }
-fun FAH2Annotated(data: BigInteger, hashLength: Int): BigInteger {
+fun FAH2Annotated(input: Any, hashLength: Int): BigInteger {
+    val data = getObjectBinary(input)
     println("hashLength: $hashLength")
     println("data: ${data.toString(2)}")
 
@@ -47,7 +49,8 @@ fun FAH2Annotated(data: BigInteger, hashLength: Int): BigInteger {
     }
     return hash
 }
-fun FAH2m(data: BigInteger, hashLength: Int): BigInteger {
+fun FAH2m(input: Any, hashLength: Int): BigInteger {
+    val data = getObjectBinary(input)
     var hash = BigInteger.ZERO
     val primes = listOf(2, 3, 5, 7, 11, 13, 17, 19, 23).filter { it <= hashLength }
     for (p in primes){
@@ -62,7 +65,8 @@ fun FAH2m(data: BigInteger, hashLength: Int): BigInteger {
     }
     return hash
 }
-fun FAH2mAnnotated(data: BigInteger, hashLength: Int): BigInteger {
+fun FAH2mAnnotated(input: Any, hashLength: Int): BigInteger {
+    val data = getObjectBinary(input)
     println("hashLength: $hashLength")
     println("data: ${data.toString(2)}")
 
@@ -87,7 +91,8 @@ fun FAH2mAnnotated(data: BigInteger, hashLength: Int): BigInteger {
     }
     return hash
 }
-fun FAH2c(data: BigInteger, hashLength: Int): BigInteger {
+fun FAH2c(input: Any, hashLength: Int): BigInteger {
+    val data = getObjectBinary(input)
     var hash = BigInteger.ZERO
     val primes = listOf(2, 3, 5, 7, 11, 13, 17, 19, 23).filter { it <= hashLength }
     for (p in primes){
@@ -102,7 +107,8 @@ fun FAH2c(data: BigInteger, hashLength: Int): BigInteger {
     }
     return hash
 }
-fun FAH2cAnnotated(data: BigInteger, hashLength: Int): BigInteger {
+fun FAH2cAnnotated(input: Any, hashLength: Int): BigInteger {
+    val data = getObjectBinary(input)
     println("hashLength: $hashLength")
     println("data: ${data.toString(2)}")
 
@@ -127,45 +133,51 @@ fun FAH2cAnnotated(data: BigInteger, hashLength: Int): BigInteger {
     }
     return hash
 }
-fun FAH3(data: BigInteger, hashLength: Int): BigInteger {
+fun FAH3(input: Any, hashLength: Int): BigInteger {
+    val data = getObjectBinary(input)
     var hash = BigInteger.ZERO
     val primes = listOf(2, 3, 5, 7, 11, 13, 17, 19, 23, 29).filter { it < hashLength }
     var operation = 0
-
-    for (p in primes) {
-        for (i in 0..(data.bitLength()-1)/p) {
-            val chunk = (data shr (i*p)) and ((1 shl p) - 1).toBigInteger()
-            hash = when(operation){
-                0 -> hash or (chunk.toString(2) + "0".repeat((hashLength - chunk.bitLength()))).toBigInteger(2)
-                1 -> hash and (chunk.toString(2) + "1".repeat((hashLength - chunk.bitLength()))).toBigInteger(2)
-                else -> {hash xor chunk}
+    for(pass in 0..0){
+        for (p in primes) {
+            var chunkDonor = data
+            for (i in 0..(data.bitLength()-1)/p) {
+                val chunk = chunkDonor and ((1 shl p) - 1).toBigInteger()
+                chunkDonor = chunkDonor shr p
+                hash = when(operation){
+                    0 -> hash or chunk
+                    1 -> hash and (((1 shl p) - 1).toBigInteger() xor (chunk.inv()))
+                    else -> hash xor chunk
+                }
+                operation = (operation + 1) % 3
+                hash = rotateLeft(hash, hashLength)
             }
-            operation = (operation + 1) % 3
-            hash = rotateLeft(hash, hashLength)
         }
     }
     return hash
 }
-
-fun FAH3Annotated(data: BigInteger, hashLength: Int): BigInteger {
+fun FAH3Annotated(input: Any, hashLength: Int): BigInteger {
+    val data = getObjectBinary(input)
     println("hashLength: $hashLength")
 
     var hash = BigInteger.ZERO
     val primes = listOf(2, 3, 5, 7, 11, 13, 17, 19, 23, 29).filter { it < hashLength }
     var operation = 0
-    for(pass in 0..10){
+    for(pass in 0..0){
         println("$BRIGHT_WHITE--------------------- pass $pass ---------------------$RESET")
         for (p in primes) {
             println("$BRIGHT_CYAN------------------ $p ------------------$RESET")
+            var chunkDonor = data
             for (i in 0..(data.bitLength()-1)/p) {
-                val chunk = (data shr (i*p)) and ((1 shl p) - 1).toBigInteger()
+                val chunk = chunkDonor and ((1 shl p) - 1).toBigInteger()
+                chunkDonor = chunkDonor shr p
                 print(pad(hash, hashLength))
                 print(if(operation == 0) " or  " else if(operation == 1) " and " else " xor ")
                 print(pad(chunk, p))
                 hash = when(operation){
-                    0 -> hash or (chunk.toString(2) + "0".repeat((hashLength - chunk.bitLength()))).toBigInteger(2)
-                    1 -> hash and (chunk.toString(2) + "1".repeat((hashLength - chunk.bitLength()))).toBigInteger(2)
-                    else -> {hash xor chunk}
+                    0 -> hash or chunk
+                    1 -> hash and (((1 shl p) - 1).toBigInteger() xor (chunk.inv()))
+                    else -> hash xor chunk
                 }
                 operation = (operation + 1) % 3
                 print(" = ${pad(hash, hashLength)} --> ")
@@ -176,7 +188,11 @@ fun FAH3Annotated(data: BigInteger, hashLength: Int): BigInteger {
     }
     return hash
 }
-
+fun modHash(input: Any, size: Int) : BigInteger {
+    val data = getObjectBinary(input)
+    return data and (BigInteger.ONE shl size) - BigInteger.ONE
+}
+fun randomHash(size: Int) : BigInteger = BigInteger(size, Random())
 
 private fun rotateLeft(num : BigInteger, size: Int) : BigInteger {
     val shifted = (num shl 1) and (BigInteger.ONE shl size) - BigInteger.ONE //Mask maintains size
@@ -191,7 +207,7 @@ object FAH4 {
     private val file = File("src/table")
     private val table: Array<Array<BigInteger>> by lazy { getTable(file) }
 
-    fun hash(input: Any) : BigInteger{
+    fun FAH4(input: Any) : BigInteger{
         val data = getObjectBinary(input)
         var hash = BigInteger.ZERO
         var chunkDonor = data
@@ -236,19 +252,30 @@ object FAH4 {
     }
 
     fun main() {
-        println(FAH4.hash(BigInteger.ONE))
-        println(FAH4.hash(BigInteger.TWO))
-        println(FAH4.hash(BigInteger("1111111",2)))
-        println(FAH4.hash(BigInteger("1111110",2)))
-        println(FAH4.hash(BigInteger("1111101",2)))
-        println(FAH4.hash(BigInteger("1111011",2)))
-        println(FAH4.hash(BigInteger("1110111",2)))
-        println(FAH4.hash(BigInteger("1101111",2)))
-        println(FAH4.hash(BigInteger("1011111",2)))
-        println(FAH4.hash(BigInteger("0111111",2)))
+        println(FAH4.FAH4(BigInteger.ONE))
+        println(FAH4.FAH4(BigInteger.TWO))
+        println(FAH4.FAH4(BigInteger("1111111",2)))
+        println(FAH4.FAH4(BigInteger("1111110",2)))
+        println(FAH4.FAH4(BigInteger("1111101",2)))
+        println(FAH4.FAH4(BigInteger("1111011",2)))
+        println(FAH4.FAH4(BigInteger("1110111",2)))
+        println(FAH4.FAH4(BigInteger("1101111",2)))
+        println(FAH4.FAH4(BigInteger("1011111",2)))
+        println(FAH4.FAH4(BigInteger("0111111",2)))
     }
 }
+fun getObjectBinary(input: Any): BigInteger {
+    val out = ByteArrayOutputStream()
+    val reader = ObjectOutputStream(out)
+    reader.writeObject(input)
 
+    val data = out.toByteArray()
+
+    out.close()
+    reader.close()
+
+    return BigInteger(1, data)
+}
 fun main() {
     val hash = BigInteger("111101", 2)
     println(FAH2cAnnotated(getObjectBinary("penguins:)"), 16))
