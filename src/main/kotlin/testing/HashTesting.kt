@@ -1,3 +1,6 @@
+package testing
+
+import production.*
 import java.math.BigInteger
 import kotlin.math.log10
 import kotlin.math.pow
@@ -49,7 +52,7 @@ fun checkAvalanche(hashFunc: (Any) -> BigInteger, hashLength: Int, printing: Boo
     return (total / data.length.toDouble()) / hashLength
 }
 fun compareAvalanche(){
-    println("Random hash: " + checkAvalanche({randomHash(32)}, 32, false))
+    println("Random hash: " + checkAvalanche({ randomHash(32) }, 32, false))
     println("Object hashing: " + checkAvalanche({input -> input.hashCode().toBigInteger()}, 32, false))
     println("Mod hashing: " + checkAvalanche({input -> modHash(input, 32) }, 32, false))
     println("FAH2: " + checkAvalanche({input -> FAH2(input, 32) }, 32, false))
@@ -61,7 +64,7 @@ fun compareAvalanche(){
 fun<K : Any> checkCollisions(hashFunc: (Any) -> BigInteger, generateKey: (index: Int) -> K, hashPrinting: Boolean = false): Double{
     val numItems = 2.0.pow(13).toInt()
 
-    val h = HashTable<K, Boolean>(hashFunc, initialStorage = 2)
+    val h = HashTable<K, Boolean>(hashFunc, expectedOccupancy = 2)
     val start = System.currentTimeMillis()
     for(i in 0..<numItems){
         val key = generateKey(i)
@@ -71,8 +74,8 @@ fun<K : Any> checkCollisions(hashFunc: (Any) -> BigInteger, generateKey: (index:
 
     print("Time: ${"%.2f".format((end - start)/1000.0)} seconds | ")
     print("Collision proportion: ${h.getCollisionProportion().toString().take(7).padEnd(7,' ')} | ")
-    print("# collisions: ${h.numCollisions.toString().padStart(log10(numItems.toDouble()).toInt() + 1,' ')} | ")
-    print("# keys: ${h.size().toString().padEnd(4)} | ")
+    print("# collisions: ${h.collisions.toString().padStart(log10(numItems.toDouble()).toInt() + 1,' ')} | ")
+    print("# keys: ${h.size.toString().padEnd(4)} | ")
     println("Table Size: ${h.arr.size}")
 
     if(hashPrinting){
@@ -132,6 +135,5 @@ fun hashKeysCollisionSummary(){
 }
 
 fun main() {
-//    hashKeysCollisionSummary()
-    checkCollisions({ input -> FAH2c(input, 32) }, { index -> index}, true)
+    hashKeysCollisionSummary()
 }

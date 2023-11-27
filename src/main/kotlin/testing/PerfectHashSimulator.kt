@@ -1,3 +1,5 @@
+package testing
+
 import kotlin.math.pow
 
 fun simulatePerfectHash(items: Int, spaces: Int): Double{

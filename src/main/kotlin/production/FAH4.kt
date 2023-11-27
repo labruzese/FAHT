@@ -1,3 +1,5 @@
+package production
+
 import java.io.*
 import java.math.BigInteger
 import java.util.*
@@ -5,8 +7,10 @@ import java.util.*
 object FAH4 {
     private const val DEFAULT_SIZE = 128 //Default Hash Size; DO NOT CHANGE unless you know what you're doing
     private const val TABLE_SIZE_BITS = 16 //2^table_size_bits storage spots in table; also DON'T CHANGE this; must be even so that we can split into x and y
-    private const val TABLE_DIMENSION_BITS = TABLE_SIZE_BITS/2
+    private const val TABLE_DIMENSION_BITS = TABLE_SIZE_BITS /2
+
     private val file = File("src/table")
+    //don't initialize our table until we have to since it can be expensive
     private val table: Array<Array<BigInteger>> by lazy { getTable(file) }
 
     fun hash(input: Any, hashLength: Int = DEFAULT_SIZE) : BigInteger {
@@ -14,7 +18,7 @@ object FAH4 {
 
         var hash = BigInteger.ZERO
         var chunkDonor = data
-        for(i in 0..data.bitLength()/TABLE_SIZE_BITS){
+        for(i in 0..data.bitLength()/ TABLE_SIZE_BITS){
             val chunk =  chunkDonor and  ((BigInteger.ONE shl TABLE_SIZE_BITS)-BigInteger.ONE)
 
             val x = chunk and ((BigInteger.ONE shl TABLE_DIMENSION_BITS)-BigInteger.ONE)
@@ -38,7 +42,7 @@ object FAH4 {
     }
 
     private fun serializeNewTable(f: File) {
-        val table = Array(1 shl (TABLE_DIMENSION_BITS-1)) { getOuter() }
+        val table = Array(1 shl (TABLE_DIMENSION_BITS -1)) { getOuter() }
 
         val file = FileOutputStream(f)
         val out = ObjectOutputStream(file)
@@ -49,7 +53,7 @@ object FAH4 {
         file.close()
     }
 
-    private fun getOuter(): Array<BigInteger> = Array(1 shl (TABLE_DIMENSION_BITS-1)) { getInner() }
+    private fun getOuter(): Array<BigInteger> = Array(1 shl (TABLE_DIMENSION_BITS -1)) { getInner() }
     private fun getInner(): BigInteger = BigInteger(DEFAULT_SIZE, Random())
 
     private fun getTable(f : File) : Array<Array<BigInteger>>{

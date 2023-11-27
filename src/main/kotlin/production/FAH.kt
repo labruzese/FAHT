@@ -1,4 +1,7 @@
-import java.io.*
+package production
+
+import java.io.ByteArrayOutputStream
+import java.io.ObjectOutputStream
 import java.math.BigInteger
 import java.util.*
 
@@ -8,6 +11,18 @@ const val BRIGHT_MAGENTA = "\u001b[95;1m"
 const val BRIGHT_CYAN = "\u001b[96;1m"
 const val BRIGHT_WHITE = "\u001b[97;1m"
 const val RESET = "\u001b[0m"
+
+fun getObjectBinary(input: Any): BigInteger {
+    val out = ByteArrayOutputStream()
+    val reader = ObjectOutputStream(out)
+    reader.writeObject(input)
+
+    val data = out.toByteArray()
+    out.close()
+    reader.close()
+
+    return BigInteger(1, data)
+}
 
 fun FAH2(input: Any, hashLength: Int): BigInteger {
     val data = getObjectBinary(input)
@@ -60,6 +75,7 @@ fun FAH2c(input: Any, hashLength: Int): BigInteger {
     return hash
 }
 
+@Deprecated("This is worse than every other FAH in every way")
 fun FAH3(input: Any, hashLength: Int): BigInteger {
     val data = getObjectBinary(input)
     var hash = BigInteger.ZERO
@@ -88,6 +104,7 @@ fun modHash(input: Any, size: Int) : BigInteger {
     val data = getObjectBinary(input)
     return data and (BigInteger.ONE shl size) - BigInteger.ONE
 }
+
 fun randomHash(size: Int) : BigInteger = BigInteger(size, Random())
 
 private fun rotateLeft(num : BigInteger, size: Int) : BigInteger {
@@ -97,16 +114,4 @@ private fun rotateLeft(num : BigInteger, size: Int) : BigInteger {
 private fun cut(hash: BigInteger, size: Int, randomness: Boolean) : BigInteger {
     val shift = if(randomness) size/3 else size/2
     return (hash shl shift) + (hash shr size - shift) and (BigInteger.ONE shl size) - BigInteger.ONE
-}
-
-fun getObjectBinary(input: Any): BigInteger {
-    val out = ByteArrayOutputStream()
-    val reader = ObjectOutputStream(out)
-    reader.writeObject(input)
-
-    val data = out.toByteArray()
-    out.close()
-    reader.close()
-
-    return BigInteger(1, data)
 }
