@@ -6,19 +6,20 @@ import java.util.LinkedList
 
 
 //Pre-condition: maxInitialStorage is a positive power of 2
-class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {input -> FAH2(getObjectBinary(input), 32)},
+class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {input -> FAH2c(getObjectBinary(input), 32)},
                                  items: Collection<Pair<K,V>> = emptyList(),
-                                 initialStorage: Int = 32) {
+                                 initialStorage: Int = 64) {
     private val MAX_PERCENT_FULL: Double = 0.5
     private val SIZE_INCREASE_MULTIPLIER = 2
     var numCollisions = 0
+        private set
 
     //Should be fully private in any actual implementation but is publicly visible for testing
     var arr : Array<LinkedList<Pair<K, V>>?> private set
     private val keys = mutableSetOf<K>()
 
     init {
-        require(initialStorage > 0 && (initialStorage and (initialStorage - 1)) == 0) //positive power of 2
+        require(initialStorage > 0 && initialStorage and (initialStorage - 1) == 0) //positive power of 2
         arr = Array(getArraySize(initialStorage)) {null}
         for(item in items){
             this[item.first] = item.second
@@ -63,11 +64,10 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
         return null
     }
 
-    private fun getIndex(key: K) = (hashFunc(key).mod(arr.size.toBigInteger())).toInt()
+    private fun getIndex(key: K) = (hashFunc(key).mod(arr.size.toBigInteger())).toInt() //this could be optimized with masks
 
     //Post-condition: Increases the size of the hashmap by a factor of SIZE_INCREASE_MULTIPLIER
     private fun increaseSize() {
-        println("Size increased to ${arr.size}")
         //Store all the keys and values of the old hashmap
         val keyValues = getKVPairs()
 
@@ -96,18 +96,11 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
     fun getKVPairs() : MutableSet<Pair<K, V>>{
         val keyValues = mutableSetOf<Pair<K, V>>()
         for(k in keys){
-            keyValues.add(Pair(k, get(k)!!))
+            keyValues.add(Pair(k, this[k]!!))
         }
         return keyValues
     }
-    fun getKeys() : MutableSet<K> = keys
-    fun getValues() : MutableSet<V>{
-        val values = mutableSetOf<V>()
-        for(k in keys){
-            values.add(Pair(k, get(k)!!).second)
-        }
-        return values
-    }
+
     fun getCollisionProportion() : Double = numCollisions.toDouble()/keys.size
     override fun toString(): String = getKVPairs().toString()
 }
