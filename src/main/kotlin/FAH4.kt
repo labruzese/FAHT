@@ -3,8 +3,8 @@ import java.math.BigInteger
 import java.util.*
 
 object FAH4 {
-    private const val DEFAULT_SIZE = 128 //DO NOT CHANGE unless you know what you're doing
-    private const val TABLE_SIZE_BITS = 16 //also DON'T CHANGE this; must be even so that we can split into x and y total size is this squared
+    private const val DEFAULT_SIZE = 128 //Default Hash Size; DO NOT CHANGE unless you know what you're doing
+    private const val TABLE_SIZE_BITS = 16 //2^table_size_bits storage spots in table; also DON'T CHANGE this; must be even so that we can split into x and y
     private const val TABLE_DIMENSION_BITS = TABLE_SIZE_BITS/2
     private val file = File("src/table")
     private val table: Array<Array<BigInteger>> by lazy { getTable(file) }
