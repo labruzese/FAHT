@@ -37,7 +37,6 @@ fun FAH2(input: Any, hashLength: Int): BigInteger {
             hash = rotateLeft(hash, hashLength)
         }
     }
-
     return hash
 }
 
