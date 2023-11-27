@@ -28,14 +28,12 @@ fun checkAvalanche(hashFunc: (Any) -> BigInteger, hashLength: Int, printing: Boo
     for(i in data.indices){
         val newData: String = if(data[i] == '0') data.replaceRange(i, i + 1, "1") else data.replaceRange(i, i + 1, "0")
         val newHash: String = pad(hashFunc(newData), hashLength)
-//        println("Old: $orgHash, New: $newHash")
-        if(printing) print("" + compare(orgHash, newHash) + ",")
+        if(printing) print("" + countDifferences(orgHash, newHash) + ",")
         for(j in orgHash.indices){
             if(orgHash[j] != newHash[j]){
                 changedNums[j]++
             }
         }
-//        println("$newHash   --- digit changed: $i")
     }
     if(printing) {
         println()
@@ -43,8 +41,8 @@ fun checkAvalanche(hashFunc: (Any) -> BigInteger, hashLength: Int, printing: Boo
             println("$i digit is changed ${"%.2f".format(changedNums[i] / data.length.toDouble() * 100)}% of the time")
         }
     }
+
     var total = 0.0
-    //println("Changed nums: ${changedNums.toList()}")
     for(i in changedNums){
         total += i
     }
@@ -60,18 +58,20 @@ fun compareAvalanche(){
 }
 
 
-fun checkCollisions(hashFunc: (Any) -> BigInteger, hashPrinting: Boolean = false): Double{
-    val h = HashTable<Int, String>(hashFunc, initialStorage = 2.0.pow(13).toInt())
+fun<K : Any> checkCollisions(hashFunc: (Any) -> BigInteger, generateKey: (index: Int) -> K, hashPrinting: Boolean = false): Double{
+    val numItems = 2.0.pow(13).toInt()
+
+    val h = HashTable<K, Boolean>(hashFunc, initialStorage = 2)
     val start = System.currentTimeMillis()
-    for(i in 1..2.0.pow(13).toInt()){
-        val key = i*512
-        h[key] = ""
+    for(i in 0..<numItems){
+        val key = generateKey(i)
+        h[key] = true
     }
     val end = System.currentTimeMillis()
 
     print("Time: ${"%.2f".format((end - start)/1000.0)} seconds | ")
-    print("Collision proportion: ${h.getCollisionProportion()} | ")
-    print("# collisions: ${h.numCollisions} | ")
+    print("Collision proportion: ${h.getCollisionProportion().toString().take(7).padEnd(7,' ')} | ")
+    print("# collisions: ${h.numCollisions.toString().padStart(log10(numItems.toDouble()).toInt() + 1,' ')} | ")
     println("# keys: ${h.size()}")
 
     if(hashPrinting){
@@ -82,6 +82,70 @@ fun checkCollisions(hashFunc: (Any) -> BigInteger, hashPrinting: Boolean = false
     }
     return h.getCollisionProportion()
 }
+/*
+    print("Random hashing - ".padStart(18))
+    checkCollisions({ input -> randomHash(32)}, generateKey, hashPrinting = false)
+    print("Object hashing - ".padStart(18))
+    checkCollisions({ input -> input.hashCode().toBigInteger() }, generateKey, hashPrinting = false)
+    print("Mod hashing - ".padStart(18))
+    checkCollisions ({ input -> modHash(input, 32) }, generateKey, hashPrinting = false)
+    print("FAH2 hashing - ".padStart(18))
+    checkCollisions ({ input -> FAH2(input, 32) }, generateKey, hashPrinting = false)
+    print("FAH2c hashing - ".padStart(18))
+    checkCollisions ({ input -> FAH2c(input, 32) }, generateKey, hashPrinting = false)
+    print("FAH4 hashing - ".padStart(18))
+    checkCollisions ({ input -> FAH4.hash(input, 32) }, generateKey, hashPrinting = false)
+
+ */
+
+fun keysCollisionsSummary(hashFunc: (Any) -> BigInteger){
+    for (i in 0..7) {
+        keyGenerationPrinting(i)
+        print(" - ")
+
+        val keyFunc: (Int) -> Any = when (i) {
+            0 -> { index -> index}
+            1 -> { index -> index * 5 }
+            2 -> { index -> index * 1024 }
+            3 -> {index -> index % 64}
+            4 -> { _ -> Math.random() }
+            5 -> { _ -> (Math.random() * 100000000).toInt() }
+            6 -> { _ -> (Math.random()).toString() }
+            7 -> { _ -> (Math.random() * 100).toInt().toString().repeat((Math.random() * 100).toInt()) }
+            else -> throw IllegalArgumentException("Invalid iteration: $i")
+        }
+        checkCollisions(hashFunc, keyFunc)
+    }
+}
+fun keyGenerationPrinting(index: Int){
+    val name = (when (index) {
+        0 -> "i"
+        1 -> "i*5"
+        2 -> "i*1024"
+        3 -> "i%69"
+        4 -> "randDouble"
+        5 -> "randIntStr"
+        6 -> "randDoubleStr"
+        7 -> "randRepeatRand3DigitStr"
+        else -> "Invalid index"
+    })
+    print(name.padStart("randRepeatRand3DigitStr".length, ' '))
+}
+fun hashKeysCollisionSummary(){
+    println("--------------------Random Hashing--------------------")
+    keysCollisionsSummary{ randomHash(32) }
+    println("--------------------Object Hashing--------------------")
+    keysCollisionsSummary{ input -> input.hashCode().toBigInteger() }
+    println("--------------------Mod Hashing--------------------")
+    keysCollisionsSummary{ input -> modHash(input, 32) }
+    println("--------------------FAH2 Hashing--------------------")
+    keysCollisionsSummary{ input -> FAH2(input, 32) }
+    println("--------------------FAH2c Hashing--------------------")
+    keysCollisionsSummary{ input -> FAH2c(input, 32) }
+    println("--------------------FAH4 Hashing--------------------")
+    keysCollisionsSummary{ input -> FAH4.hash(input, 32) }
+}
+
 fun main() {
     hashKeysCollisionSummary()
 }

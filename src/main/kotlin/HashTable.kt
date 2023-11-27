@@ -6,19 +6,20 @@ import java.util.LinkedList
 
 
 //Pre-condition: maxInitialStorage is a positive power of 2
-class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {input -> FAH2(getObjectBinary(input), 32)},
+class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {input -> FAH2c(getObjectBinary(input), 32)},
                                  items: Collection<Pair<K,V>> = emptyList(),
                                  initialStorage: Int = 32) {
     private val MAX_PERCENT_FULL: Double = 0.5
     private val SIZE_INCREASE_MULTIPLIER = 2
     var numCollisions = 0
+        private set
 
     //Should be fully private in any actual implementation but is publicly visible for testing
     var arr : Array<LinkedList<Pair<K, V>>?> private set
     private val keys = mutableSetOf<K>()
 
     init {
-        require(initialStorage > 0 && (initialStorage and (initialStorage - 1)) == 0) //positive power of 2
+        require(initialStorage > 0 && initialStorage and (initialStorage - 1) == 0) //positive power of 2
         arr = Array(getArraySize(initialStorage)) {null}
         for(item in items){
             this[item.first] = item.second
