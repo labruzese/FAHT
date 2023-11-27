@@ -77,27 +77,11 @@ fun<K : Any> checkCollisions(hashFunc: (Any) -> BigInteger, generateKey: (index:
 
     if(hashPrinting){
         println("----------hash table----------")
-        print(h.arr.joinToString(" "))
+        println(h.arr.joinToString("\n"))
         println("------------------------------")
-
     }
     return h.getCollisionProportion()
 }
-/*
-    print("Random hashing - ".padStart(18))
-    checkCollisions({ input -> randomHash(32)}, generateKey, hashPrinting = false)
-    print("Object hashing - ".padStart(18))
-    checkCollisions({ input -> input.hashCode().toBigInteger() }, generateKey, hashPrinting = false)
-    print("Mod hashing - ".padStart(18))
-    checkCollisions ({ input -> modHash(input, 32) }, generateKey, hashPrinting = false)
-    print("FAH2 hashing - ".padStart(18))
-    checkCollisions ({ input -> FAH2(input, 32) }, generateKey, hashPrinting = false)
-    print("FAH2c hashing - ".padStart(18))
-    checkCollisions ({ input -> FAH2c(input, 32) }, generateKey, hashPrinting = false)
-    print("FAH4 hashing - ".padStart(18))
-    checkCollisions ({ input -> FAH4.hash(input, 32) }, generateKey, hashPrinting = false)
-
- */
 
 fun keysCollisionsSummary(hashFunc: (Any) -> BigInteger){
     for (i in 0..7) {
@@ -133,8 +117,8 @@ fun keyGenerationPrinting(index: Int){
     print(name.padStart("randRepeatRand3DigitStr".length, ' '))
 }
 fun hashKeysCollisionSummary(){
-    //println("--------------------Random Hashing--------------------")
-    //keysCollisionsSummary{ randomHash(32) }
+    println("--------------------Random Hashing--------------------")
+    keysCollisionsSummary{ randomHash(32) }
     println("--------------------Object Hashing--------------------")
     keysCollisionsSummary{ input -> input.hashCode().toBigInteger() }
     println("--------------------Mod Hashing--------------------")
@@ -148,5 +132,6 @@ fun hashKeysCollisionSummary(){
 }
 
 fun main() {
-    hashKeysCollisionSummary()
+//    hashKeysCollisionSummary()
+    checkCollisions({ input -> FAH2c(input, 32) }, { index -> index}, true)
 }

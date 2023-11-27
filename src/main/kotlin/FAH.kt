@@ -63,7 +63,7 @@ fun FAH2c(input: Any, hashLength: Int): BigInteger {
 fun FAH3(input: Any, hashLength: Int): BigInteger {
     val data = getObjectBinary(input)
     var hash = BigInteger.ZERO
-    val primes = listOf(2, 3, 5, 7, 11, 13, 17, 19, 23, 29).filter { it < hashLength }
+    val primes = listOf(2, 3, 5, 7, 11, 13, 17, 19, 23).filter { it < hashLength }
     var operation = 0
     for(pass in 0..0){
         for (p in primes) {
