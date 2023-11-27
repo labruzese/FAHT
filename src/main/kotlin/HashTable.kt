@@ -1,8 +1,6 @@
 //TODO: Add iterator
-import java.io.ByteArrayOutputStream
-import java.io.ObjectOutputStream
 import java.math.BigInteger
-import java.util.LinkedList
+import java.util.*
 
 
 //Pre-condition: maxInitialStorage is a positive power of 2
@@ -20,14 +18,14 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
 
     init {
         require(initialStorage > 0 && initialStorage and (initialStorage - 1) == 0) //positive power of 2
-        arr = Array(getArraySize(initialStorage)) {null}
+        arr = Array(expectedArraySize(initialStorage)) {null}
         for(item in items){
             this[item.first] = item.second
         }
     }
 
     //Pre-condition: Your hashing function is not a simple mod hash
-    private fun getArraySize(maxOccupancy: Int) : Int = (maxOccupancy/MAX_PERCENT_FULL).toInt()
+    private fun expectedArraySize(maxOccupancy: Int) : Int = (maxOccupancy/MAX_PERCENT_FULL).toInt()
 
 
     //Post-condition: Returns the value if it is found, null otherwise
