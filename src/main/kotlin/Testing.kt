@@ -1,4 +1,5 @@
 import java.math.BigInteger
+import kotlin.math.log10
 import kotlin.math.pow
 
 //Pre-condition: size >= num.bitLength()
@@ -7,7 +8,7 @@ fun pad(num: BigInteger, size: Int): String{
 }
 
 //Pre-condition: s1 and s2 are the same length
-private fun compare(s1: String, s2: String): Int{
+private fun countDifferences(s1: String, s2: String): Int{
     var numCharsDifferent = 0
     for (c in s1.indices){
         if(s1[c] != s2[c]){
@@ -49,6 +50,15 @@ fun checkAvalanche(hashFunc: (Any) -> BigInteger, hashLength: Int, printing: Boo
     }
     return (total / data.length.toDouble()) / hashLength
 }
+fun compareAvalanche(){
+    println("Random hash: " + checkAvalanche({randomHash(32)}, 32, false))
+    println("Object hashing: " + checkAvalanche({input -> input.hashCode().toBigInteger()}, 32, false))
+    println("Mod hashing: " + checkAvalanche({input -> modHash(input, 32) }, 32, false))
+    println("FAH2: " + checkAvalanche({input -> FAH2(input, 32) }, 32, false))
+    println("FAH 2c: " + checkAvalanche({input -> FAH2c(input, 32) }, 32, false))
+    println("FAH 4: " + checkAvalanche({input -> FAH4.hash(input, 32) }, 32, false))
+}
+
 
 fun checkCollisions(hashFunc: (Any) -> BigInteger, hashPrinting: Boolean = false): Double{
     val h = HashTable<Int, String>(hashFunc, initialStorage = 2.0.pow(13).toInt())
@@ -66,49 +76,12 @@ fun checkCollisions(hashFunc: (Any) -> BigInteger, hashPrinting: Boolean = false
 
     if(hashPrinting){
         println("----------hash table----------")
-        for(l in h.arr){
-            println(l)
-        }
+        print(h.arr.joinToString(" "))
         println("------------------------------")
 
     }
     return h.getCollisionProportion()
 }
 fun main() {
-
-//    println(FAH2Annotated(getObjectBinary(arrayOf(1,2,3)), 32))
-//    println(FAH2Annotated(getObjectBinary(arrayOf(2,3,4)), 32))
-
-//    println(FAH4.hash(BigInteger.TWO))
-//    println(FAH4.hash(BigInteger("3")))
-//    println(FAH4.hash(BigInteger("4")))
-//    println(FAH4.hash(BigInteger("5")))
-//    println(FAH4.hash(BigInteger("6")))
-
-    //println(FAH3Annotated(getObjectBinary(231234), 16))
-
-//    print("Random hashing - ")
-//    checkCollisions({ input -> randomHash(32) }, hashPrinting = false)
-//    print("Object hashing - ")
-//    checkCollisions({ input -> input.hashCode().toBigInteger() }, hashPrinting = false)
-//    print("Mod hashing - ")
-//    checkCollisions ({ input -> modHash(getObjectBinary(input), 32) }, hashPrinting = false)
-//    print("FAH2 hashing - ")
-//    checkCollisions ({ input -> FAH2(getObjectBinary(input), 32) }, hashPrinting = false)
-//    print("FAH2c hashing - ")
-//    checkCollisions ({ input -> FAH2c(getObjectBinary(input), 32) }, hashPrinting = false)
-//    print("FAH3 hashing - ")
-//    checkCollisions ({ input -> FAH3(getObjectBinary(input), 32) }, hashPrinting = false)
-//    print("FAH4 hashing - ")
-//    checkCollisions ({ input -> FAH4.hash(input) }, hashPrinting = false)
-
-    println("Random hash: " + checkAvalanche({randomHash(32)}, 32, false))
-    println("Object hashing: " + checkAvalanche({input -> input.hashCode().toBigInteger()}, 32, false))
-    println("Mod hashing: " + checkAvalanche({input -> modHash(input, 32) }, 32, false))
-    println("FAH2: " + checkAvalanche({input -> FAH2(input, 32) }, 32, false))
-    println("FAH 2c: " + checkAvalanche({input -> FAH2c(input, 32) }, 32, false))
-    println("FAH2m: " + checkAvalanche({input -> FAH2m(input, 32) }, 32, false))
-    println("FAH 3: " + checkAvalanche({input -> FAH3(input, 32) }, 32, false))
-    println("FAH 4: " + checkAvalanche({input -> FAH4.FAH4(input) }, 32, false))
-
+    hashKeysCollisionSummary()
 }

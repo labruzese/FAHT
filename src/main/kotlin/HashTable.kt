@@ -17,7 +17,6 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
     var arr : Array<LinkedList<Pair<K, V>>?> private set
     private val keys = mutableSetOf<K>()
 
-
     init {
         require(initialStorage > 0 && (initialStorage and (initialStorage - 1)) == 0) //positive power of 2
         arr = Array(getArraySize(initialStorage)) {null}
@@ -47,7 +46,6 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
         if (arr[arrIndex] == null) {
             arr[arrIndex] = LinkedList<Pair<K, V>>()
         }
-
         //Make sure the key isn't already in the linked list
         else {
             for(i in arr[arrIndex]!!.indices){
@@ -113,6 +111,3 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
     fun getCollisionProportion() : Double = numCollisions.toDouble()/keys.size
     override fun toString(): String = getKVPairs().toString()
 }
-
-
-
