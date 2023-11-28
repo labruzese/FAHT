@@ -27,7 +27,7 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
     Description: Initializes empty array of expected size and fill it with items
     */
     init {
-        arr = Array(expectedArraySize(expectedOccupancy)) {null}
+        arr = Array(expectedArraySize(expectedOccupancy.coerceAtLeast(items.size))) {null}
         for(item in items){
             this[item.first] = item.second
         }
