@@ -68,3 +68,11 @@ object FAH4 {
         return table
     }
 }
+
+fun main() {
+    println(FAH4.hash("test").toString(2))
+    println(FAH4.hash("test",64).toString(2))
+    println(FAH4.hash("test",64).toString(2).length)
+
+
+}

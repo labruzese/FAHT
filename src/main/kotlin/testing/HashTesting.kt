@@ -2,6 +2,8 @@ package testing
 
 import production.*
 import java.math.BigInteger
+import java.nio.file.Files
+import java.nio.file.Paths
 import kotlin.math.log10
 import kotlin.math.pow
 
@@ -64,7 +66,7 @@ fun compareAvalanche(){
 fun<K : Any> checkCollisions(hashFunc: (Any) -> BigInteger, generateKey: (index: Int) -> K, hashPrinting: Boolean = false): Double{
     val numItems = 2.0.pow(13).toInt()
 
-    val h = HashTable<K, Boolean>(hashFunc, expectedOccupancy = 2)
+    val h = HashTable<K, Boolean>(expectedOccupancy = 2, hashFunc = hashFunc)
     val start = System.currentTimeMillis()
     for(i in 0..<numItems){
         val key = generateKey(i)
@@ -134,6 +136,19 @@ fun hashKeysCollisionSummary(){
     keysCollisionsSummary{ input -> FAH4.hash(input, 32) }
 }
 
+fun testShakespeare(hashfun: (Any) -> BigInteger){
+    val path = "src/main/kotlin/testing/shakespeare.txt"
+    val text = Files.readAllLines(Paths.get(path))
+
+    val ht = HashTable(List(text.size) { i -> Pair(i, text[i].trim())}, hashFunc = hashfun)
+
+    println("Size: ${ht.size}/${ht.arr.size}, Collision %: ${"%.4f".format(ht.getCollisionProportion())}")
+    println("ht[3765] -> ${ht[3765]}")
+}
+
 fun main() {
-    hashKeysCollisionSummary()
+    //hashKeysCollisionSummary()
+    testShakespeare { randomHash(64) }
+    testShakespeare { input -> FAH4.hash(input, hashLength = 64) }
+
 }

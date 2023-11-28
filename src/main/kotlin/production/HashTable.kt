@@ -4,9 +4,9 @@ import java.util.*
 /*
 GENERAL PROJECT DESCRIPTION
  */
-class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {input -> FAH4.hash(input, 64) },
-                                 items: Collection<Pair<K,V>> = emptyList(),
-                                 expectedOccupancy: Int = 64) {
+class HashTable<K : Any, V: Any>(items: Collection<Pair<K,V>> = emptyList(),
+                                 expectedOccupancy: Int = 64,
+                                 private val hashFunc: (Any) -> BigInteger = {input -> FAH4.hash(input, 64) }) {
     companion object {
         private const val MAX_PERCENT_FULL: Double = 0.5 //>0
         private const val SIZE_INCREASE_MULTIPLIER = 1 shl 1 //>0 and power of 2
@@ -105,7 +105,9 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
         return entry.value
     }
 
-    private fun getIndex(hash: BigInteger) = (hash.mod(arr.size.toBigInteger())).toInt() //this could be optimized with masks
+    private fun getIndex(hash: BigInteger) : Int {
+        return (hash and (BigInteger.ONE shl Integer.bitCount(arr.size-1)) - BigInteger.ONE).toInt()
+    } //this could be optimized with masks
 
     /*
     Description: Increases the underlying arr size by `SIZE_INCREASE_MULTIPLIER` by copying values
