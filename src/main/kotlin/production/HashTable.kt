@@ -72,7 +72,7 @@ class HashTable<K : Any, V: Any>(private val hashFunc: (Any) -> BigInteger = {in
             collisions++
         }
         //Add item to new spot
-        list!!.addLast(entry); size++
+        arr[arrIndex]!!.addLast(entry); size++
         if (size > MAX_PERCENT_FULL * arr.size) increaseSize()
         return null //overwrote nothing
     }
