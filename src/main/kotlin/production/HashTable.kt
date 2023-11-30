@@ -12,15 +12,14 @@ class HashTable<K : Any, V: Any>(items: Collection<Pair<K,V>> = emptyList(),
         private const val SIZE_INCREASE_MULTIPLIER = 1 shl 1 //>0 and power of 2
     }
 
-    var collisions = 0
-        private set
-
     /* Custom object stored in the hashtable */
     data class Entry<K,V>(val key: K, val hash: BigInteger, val value: V)
 
     /* Underlying storage of our items */
     var arr : Array<LinkedList<Entry<K, V>>?> private set //Should be fully private in any actual implementation but is publicly visible for testing
     var size : Int = 0
+        private set
+    var collisions = 0
         private set
 
     /*
@@ -118,14 +117,27 @@ class HashTable<K : Any, V: Any>(items: Collection<Pair<K,V>> = emptyList(),
         val entries = dumpEntries()
 
         //Clear and re-init fields
-        size = 0
-        collisions = 0
-        arr = Array(arr.size * SIZE_INCREASE_MULTIPLIER) { null }
+        clear(arr.size * SIZE_INCREASE_MULTIPLIER)
 
         //Put all the entries back
         for (entry in entries) {
             set(entry)
         }
+    }
+
+    /*
+    Description: Clears all items in this Hash Table without changing its size
+    */
+    fun clear() = clear(arr.size)
+
+    /*
+    Parameter: arrSize -> the new size of the array, must be a positive power of 2
+    Description: Clears all items in this Hash Table and re-initializes the array size to arrSize
+    */
+    private fun clear(arrSize: Int){
+        size = 0
+        collisions = 0
+        arr = Array(arrSize) { null }
     }
 
     @Suppress("MemberVisibilityCanBePrivate")

@@ -27,8 +27,8 @@ fun testHashTable(){
     println("hashTable[0] = \"set\": ${hashTable.set(0, "set")}")
     printHashTable(hashTable)
 
-    //println("Key 0: ${hashTable[0]}")
-    //println("Key 12: ${hashTable[12]}")
+    println("Key 0: ${hashTable[0]}")
+    println("Key 12: ${hashTable[12]}")
     println()
 
 
