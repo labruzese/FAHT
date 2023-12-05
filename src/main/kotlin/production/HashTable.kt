@@ -19,7 +19,7 @@ class HashTable<K : Any, V: Any>(items: Collection<Pair<K,V>> = emptyList(),
     var arr : Array<LinkedList<Entry<K, V>>?> private set //Should be fully private in any actual implementation but is publicly visible for testing
     var size : Int = 0
         private set
-    var collisions = 0
+    var collisions : Int = 0
         private set
 
     /*

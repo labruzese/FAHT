@@ -89,7 +89,7 @@ fun<K : Any> checkCollisions(hashFunc: (Any) -> BigInteger, generateKey: (index:
 }
 
 fun keysCollisionsSummary(hashFunc: (Any) -> BigInteger){
-    for (i in 0..7) {
+    for (i in 0..8) {
         keyGenerationPrinting(i)
         print(" - ")
 
@@ -102,6 +102,10 @@ fun keysCollisionsSummary(hashFunc: (Any) -> BigInteger){
             5 -> { _ -> (Math.random() * 100000000).toInt() }
             6 -> { _ -> (Math.random()).toString() }
             7 -> { _ -> (Math.random() * 100).toInt().toString().repeat((Math.random() * 100).toInt()) }
+            8 -> { index ->{
+                val file = Paths.get("src\\main\\kotlin\\testing\\HashTesting.kt")
+                val lines = Files.readAllLines(file)
+                lines[index] }}
             else -> throw IllegalArgumentException("Invalid iteration: $i")
         }
         checkCollisions(hashFunc, keyFunc)
@@ -117,6 +121,7 @@ fun keyGenerationPrinting(index: Int){
         5 -> "randIntStr"
         6 -> "randDoubleStr"
         7 -> "randRepeatRand3DigitStr"
+        8 -> "lines[index]"
         else -> "Invalid index"
     })
     print(name.padStart("randRepeatRand3DigitStr".length, ' '))
@@ -147,8 +152,6 @@ fun testShakespeare(hashfun: (Any) -> BigInteger){
 }
 
 fun main() {
-    //hashKeysCollisionSummary()
-    testShakespeare { randomHash(64) }
-    testShakespeare { input -> FAH4.hash(input, hashLength = 64) }
+    hashKeysCollisionSummary()
 
 }
