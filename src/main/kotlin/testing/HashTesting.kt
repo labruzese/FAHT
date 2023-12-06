@@ -127,18 +127,20 @@ fun keyGenerationPrinting(index: Int){
     print(name.padStart("randRepeatRand3DigitStr".length, ' '))
 }
 fun hashKeysCollisionSummary(){
-    println("--------------------Random Hashing--------------------")
-    keysCollisionsSummary{ randomHash(32) }
-    println("--------------------Object Hashing--------------------")
-    keysCollisionsSummary{ input -> input.hashCode().toBigInteger() }
-    println("--------------------Mod Hashing--------------------")
-    keysCollisionsSummary{ input -> modHash(input, 32) }
-    println("--------------------FAH2 Hashing--------------------")
-    keysCollisionsSummary{ input -> FAH2(input, 32) }
-    println("--------------------FAH2c Hashing--------------------")
-    keysCollisionsSummary{ input -> FAH2c(input, 32) }
-    println("--------------------FAH4 Hashing--------------------")
-    keysCollisionsSummary{ input -> FAH4.hash(input, 32) }
+    //println("--------------------Random Hashing--------------------")
+    //keysCollisionsSummary{ randomHash(32) }
+//    println("--------------------Object Hashing--------------------")
+//    keysCollisionsSummary{ input -> input.hashCode().toBigInteger() }
+//    println("--------------------Mod Hashing--------------------")
+//    keysCollisionsSummary{ input -> modHash(input, 32) }
+//    println("--------------------FAH2 Hashing--------------------")
+//    keysCollisionsSummary{ input -> FAH2(input, 32) }
+    //println("--------------------FAH2c Hashing--------------------")
+   // keysCollisionsSummary{ input -> FAH2c(input, 32) }
+//    println("--------------------FAH4 Hashing--------------------")
+//    keysCollisionsSummary{ input -> FAH4.hash(input, 32) }
+    println("--------------------FAH4a Hashing--------------------")
+    keysCollisionsSummary{ input -> FAH4.hashA(input, 32) }
 }
 
 fun testShakespeare(hashfun: (Any) -> BigInteger){
@@ -153,5 +155,4 @@ fun testShakespeare(hashfun: (Any) -> BigInteger){
 
 fun main() {
     hashKeysCollisionSummary()
-
 }

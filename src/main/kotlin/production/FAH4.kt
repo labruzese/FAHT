@@ -19,7 +19,25 @@ object FAH4 {
         var hash = BigInteger.ZERO
         var chunkDonor = data
         for(i in 0..data.bitLength()/ TABLE_SIZE_BITS){
-            val chunk =  chunkDonor and  ((BigInteger.ONE shl TABLE_SIZE_BITS)-BigInteger.ONE)
+            val chunk =  chunkDonor and ((BigInteger.ONE shl TABLE_SIZE_BITS)-BigInteger.ONE)
+
+            val x = chunk and ((BigInteger.ONE shl TABLE_DIMENSION_BITS)-BigInteger.ONE)
+            val y = chunk shr TABLE_DIMENSION_BITS
+
+            hash = hash xor table[x.toInt()][y.toInt()]
+            chunkDonor = chunkDonor shr TABLE_SIZE_BITS
+        }
+        return if(hashLength == DEFAULT_SIZE) hash else changeSize(hash, hashLength, DEFAULT_SIZE)
+    }
+
+    fun hashA(input: Any, hashLength: Int = DEFAULT_SIZE) : BigInteger {
+        val data = getObjectBinary(input)
+
+        var hash = BigInteger.ZERO
+        var chunkDonor = data
+        for(i in 0..data.bitLength()/ TABLE_SIZE_BITS){
+            var chunk =  chunkDonor and ((BigInteger.ONE shl TABLE_SIZE_BITS)-BigInteger.ONE)
+            chunk = chunk xor (hash shr 112)
 
             val x = chunk and ((BigInteger.ONE shl TABLE_DIMENSION_BITS)-BigInteger.ONE)
             val y = chunk shr TABLE_DIMENSION_BITS
