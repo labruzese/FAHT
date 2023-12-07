@@ -97,15 +97,12 @@ fun keysCollisionsSummary(hashFunc: (Any) -> BigInteger){
             0 -> { index -> index}
             1 -> { index -> index * 5 }
             2 -> { index -> index * 1024 }
-            3 -> {index -> index % 64}
+            3 -> { index -> index % 64}
             4 -> { _ -> Math.random() }
             5 -> { _ -> (Math.random() * 100000000).toInt() }
             6 -> { _ -> (Math.random()).toString() }
             7 -> { _ -> (Math.random() * 100).toInt().toString().repeat((Math.random() * 100).toInt()) }
-            8 -> { index ->{
-                val file = Paths.get("src\\main\\kotlin\\testing\\HashTesting.kt")
-                val lines = Files.readAllLines(file)
-                lines[index] }}
+            8 -> { index -> getLine(index)}
             else -> throw IllegalArgumentException("Invalid iteration: $i")
         }
         checkCollisions(hashFunc, keyFunc)
@@ -130,9 +127,9 @@ fun hashKeysCollisionSummary(){
     //println("--------------------Random Hashing--------------------")
     //keysCollisionsSummary{ randomHash(32) }
 //    println("--------------------Object Hashing--------------------")
-//    keysCollisionsSummary{ input -> input.hashCode().toBigInteger() }
-//    println("--------------------Mod Hashing--------------------")
-//    keysCollisionsSummary{ input -> modHash(input, 32) }
+    keysCollisionsSummary{ input -> input.hashCode().toBigInteger() }
+    println("--------------------Mod Hashing--------------------")
+    keysCollisionsSummary{ input -> modHash(input, 32) }
 //    println("--------------------FAH2 Hashing--------------------")
 //    keysCollisionsSummary{ input -> FAH2(input, 32) }
     //println("--------------------FAH2c Hashing--------------------")
@@ -143,16 +140,11 @@ fun hashKeysCollisionSummary(){
     keysCollisionsSummary{ input -> FAH4.hashA(input, 32) }
 }
 
-fun testShakespeare(hashfun: (Any) -> BigInteger){
-    val path = "src/main/kotlin/testing/shakespeare.txt"
-    val text = Files.readAllLines(Paths.get(path))
-
-    val ht = HashTable(List(text.size) { i -> Pair(i, text[i].trim())}, hashFunc = hashfun)
-
-    println("Size: ${ht.size}/${ht.arr.size}, Collision %: ${"%.4f".format(ht.getCollisionProportion())}")
-    println("ht[3765] -> ${ht[3765]}")
+fun getLine(index: Int) : String {
+    return text[index].trim()
 }
-
+const val path = "src/main/kotlin/testing/shakespeare.txt"
+val text: MutableList<String> = Files.readAllLines(Paths.get(path))
 fun main() {
     hashKeysCollisionSummary()
 }
